@@ -3,6 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches: [ "main" ]    # 当推送到 main 分支时触发
+    tags: [ 'v*' ]   # 推送标签时也触发
   pull_request:
     branches: [ "main" ]    # 可选：PR 时构建但不推送
 
@@ -32,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
+          push: ${{ github.event_name == 'push' }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ 1.0 }}  # 可选：用 commit SHA 打标签
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}  # 可选：用 commit SHA 打标签
