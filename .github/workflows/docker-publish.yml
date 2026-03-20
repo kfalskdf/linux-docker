@@ -36,5 +36,4 @@ jobs:
           push: ${{ github.event_name == 'push' }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            # 为标签或分支生成对应的镜像标签（例如 main、v1.0.0）
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
