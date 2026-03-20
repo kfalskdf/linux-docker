@@ -35,4 +35,4 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}  # 可选：用 commit SHA 打标签
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ 1.0 }}  # 可选：用 commit SHA 打标签
