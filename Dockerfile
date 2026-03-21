@@ -39,8 +39,7 @@ RUN LATEST_EASYTIER=$(curl -s https://api.github.com/repos/EasyTier/EasyTier/rel
 RUN curl -L -o gost.tar.gz https://github.com/ginuerzh/gost/releases/download/v2.12.0/gost_2.12.0_linux_amd64v3.tar.gz && \
     tar -xzf gost.tar.gz && \
     rm -f gost.tar.gz && \
-    chmod +x gost && \
-    mv gost /root/gost
+    chmod +x gost
 
 # 验证下载（可选，便于调试）
 RUN ls -lh /root
