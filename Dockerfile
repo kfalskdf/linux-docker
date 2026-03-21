@@ -4,9 +4,10 @@ FROM debian:12-slim
 # 构建参数：用户 kfal 的密码，默认为 Debian2026
 ARG DEFAULT_PASSWORD="Debian2026"
 
-# 安装必要软件（openssh-server, sudo, 下载工具, jq, shellinabox）
+# 安装必要软件（openssh-server, sudo, 下载工具, jq, shellinabox, 网络工具）
 RUN apt-get update && \
     apt-get install -y openssh-server sudo wget curl ca-certificates jq unzip shellinabox && \
+    apt-get install -y net-tools iproute2 iputils-ping dnsutils && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
