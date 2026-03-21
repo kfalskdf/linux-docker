@@ -44,9 +44,15 @@ RUN curl -L -o gost.tar.gz https://github.com/ginuerzh/gost/releases/download/v2
 # 验证下载（可选，便于调试）
 RUN ls -lh /root
 
+# 创建启动脚本
+RUN echo '#!/bin/bash' > /start.sh && \
+    echo '/usr/sbin/sshd -D &' >> /start.sh && \
+    echo '/usr/bin/shellinaboxd --port=4200 -t -b &' >> /start.sh && \
+    echo 'tail -f /dev/null' >> /start.sh && \
+    chmod +x /start.sh
+
 # 暴露 SSH 和 shellinabox 端口
 EXPOSE 22 4200
 
-# 启动 SSH 和 shellinabox 服务（HTTP 模式）
-CMD /usr/sbin/sshd -D & \
-    /usr/bin/shellinaboxd --port=4200 -t -b
+# 启动服务
+CMD ["/start.sh"]
