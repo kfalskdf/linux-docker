@@ -37,10 +37,10 @@ RUN LATEST_EASYTIER=$(curl -s https://api.github.com/repos/EasyTier/EasyTier/rel
 
 # 3. 下载 gost (GOST) v2.12.0 amd64 二进制
 RUN curl -L -o gost.tar.gz https://github.com/ginuerzh/gost/releases/download/v2.12.0/gost_2.12.0_linux_amd64v3.tar.gz && \
+    tar -tzf gost.tar.gz && \
     tar -xzf gost.tar.gz && \
     rm -f gost.tar.gz && \
-    mv gost_2.12.0_linux_amd64v3/gost /root/gost && \
-    rm -rf gost_2.12.0_linux_amd64v3
+    ls -la gost_2.12.0_linux_amd64v3/
 
 # 验证下载（可选，便于调试）
 RUN ls -lh /root
