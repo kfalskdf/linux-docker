@@ -4,9 +4,16 @@ FROM debian:12-slim
 # 构建参数：用户 kfal 的密码，默认为 Debian2026
 ARG DEFAULT_PASSWORD="Debian2026"
 
-# 安装必要软件（openssh-server, sudo, 下载工具及 jq）
+# 安装必要软件（openssh-server, sudo, 下载工具, jq, shellinabox 及编译依赖）
 RUN apt-get update && \
     apt-get install -y openssh-server sudo wget curl ca-certificates jq unzip && \
+    apt-get install -y openssl libssl-dev unzip && \
+    # 下载并编译安装 shellinabox
+    curl -L -o shellinabox.zip https://github.com/shellinabox/shellinabox/releases/download/v2.21/shellinabox-2.21.zip && \
+    unzip -o shellinabox.zip && \
+    cd shellinabox-2.21 && \
+    ./configure && make && cp shellinabox /usr/local/bin/ && cd .. && \
+    rm -rf shellinabox.zip shellinabox-2.21 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -44,8 +51,8 @@ RUN curl -L -o gost.tar.gz https://github.com/ginuerzh/gost/releases/download/v2
 # 验证下载（可选，便于调试）
 RUN ls -lh /root
 
-# 暴露 SSH 端口
-EXPOSE 22
+# 暴露 SSH 和 shellinabox 端口
+EXPOSE 22 4200
 
-# 启动 SSH 服务（前台运行）
-CMD ["/usr/sbin/sshd", "-D"]
+# 启动 SSH 和 shellinabox 服务
+CMD /usr/sbin/sshd -D & /usr/local/bin/shellinaboxd --port=4200 --user=kfal --group=kfal -c /var/run/shellinabox -b
