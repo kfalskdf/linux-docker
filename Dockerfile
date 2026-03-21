@@ -6,7 +6,7 @@ ARG DEFAULT_PASSWORD="Debian2026"
 
 # 安装必要软件（openssh-server, sudo, 下载工具及 jq）
 RUN apt-get update && \
-    apt-get install -y openssh-server sudo wget curl ca-certificates jq && \
+    apt-get install -y openssh-server sudo wget curl ca-certificates jq unzip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -27,15 +27,21 @@ WORKDIR /root
 RUN curl -L -o cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && \
     chmod +x cloudflared
 
-# 2. 下载 easytier (EasyTier) 最新版 amd64 二进制
-RUN LATEST_EASYTIER=$(curl -s https://api.github.com/repos/EasyTier/EasyTier/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' | head -1) && \
-    curl -L -o easytier "$LATEST_EASYTIER" && \
-    chmod +x easytier
+# 2. 下载 easytier (EasyTier) 最新版 x86_64 二进制
+RUN LATEST_EASYTIER=$(curl -s https://api.github.com/repos/EasyTier/EasyTier/releases/latest | jq -r '.assets[] | select(.name | contains("linux-x86_64")) | .browser_download_url' | head -1) && \
+    curl -L -o easytier.zip "$LATEST_EASYTIER" && \
+    unzip -o easytier.zip && \
+    chmod +x easytier-linux-x86_64/easytier-core && \
+    mv easytier-linux-x86_64/easytier-core /root/easytier && \
+    rm -rf easytier.zip easytier-linux-x86_64
 
 # 3. 下载 gost (GOST) 最新版 amd64 二进制
-RUN LATEST_GOST=$(curl -s https://api.github.com/repos/ginuerzh/gost/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' | head -1) && \
-    curl -L -o gost "$LATEST_GOST" && \
-    chmod +x gost
+RUN LATEST_GOST=$(curl -s https://api.github.com/repos/ginuerzh/gost/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64") and endswith(".tar.gz")) | .browser_download_url' | head -1) && \
+    curl -L -o gost.tar.gz "$LATEST_GOST" && \
+    tar -xzf gost.tar.gz && \
+    rm -f gost.tar.gz && \
+    mv gost-*/gost-linux-amd64* /root/gost 2>/dev/null || mv gost-*/gost /root/gost && \
+    rm -rf gost-*
 
 # 验证下载（可选，便于调试）
 RUN ls -lh /root
