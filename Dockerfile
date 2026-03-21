@@ -48,4 +48,6 @@ RUN ls -lh /root
 EXPOSE 22 4200
 
 # 启动 SSH 和 shellinabox 服务
-CMD /usr/sbin/sshd -D & /usr/sbin/shellinaboxd --port=4200 --user=kfal --group=kfal -c /var/run/shellinabox -b
+CMD mkdir -p /var/run/shellinabox-cert && \
+    /usr/sbin/sshd -D & \
+    /usr/bin/shellinaboxd --port=4200 --cert=/var/run/shellinabox-cert --user=kfal --group=kfal -c /var/run/shellinabox --no-beep
