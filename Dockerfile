@@ -1,19 +1,46 @@
-# 使用 Debian 12 作为基础镜像
-FROM debian:12
+# 使用 Debian 12 slim 作为基础镜像
+FROM debian:12-slim
 
-# 安装 OpenSSH 服务，并清理缓存
+# 构建参数：用户 kfal 的密码，默认为 Debian2026
+ARG DEFAULT_PASSWORD="Debian2026"
+
+# 安装必要软件（openssh-server, sudo, 下载工具及 jq）
 RUN apt-get update && \
-    apt-get install -y openssh-server && \
+    apt-get install -y openssh-server sudo wget curl ca-certificates jq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# 设置 root 用户的密码为 'root'（仅用于测试环境）
-RUN echo 'root:root' | chpasswd
+# 创建普通用户 kfal，并设置密码
+RUN useradd -m -s /bin/bash kfal && \
+    echo "kfal:${DEFAULT_PASSWORD}" | chpasswd && \
+    # 授予 sudo 免密权限（可选，便于管理）
+    echo "kfal ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# 生成 SSH 主机密钥（如果没有自动生成）
-RUN ssh-keygen -A
+# 准备 SSH 运行环境
+RUN mkdir /var/run/sshd && \
+    ssh-keygen -A
 
-# 暴露 SSH 默认端口
+# 切换到 root 目录，下载工具
+WORKDIR /root
+
+# 1. 下载 cloudflared (amd64)
+RUN curl -L -o cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && \
+    chmod +x cloudflared
+
+# 2. 下载 easytier (EasyTier) 最新版 amd64 二进制
+RUN LATEST_EASYTIER=$(curl -s https://api.github.com/repos/EasyTier/EasyTier/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' | head -1) && \
+    curl -L -o easytier "$LATEST_EASYTIER" && \
+    chmod +x easytier
+
+# 3. 下载 gost (GOST) 最新版 amd64 二进制
+RUN LATEST_GOST=$(curl -s https://api.github.com/repos/ginuerzh/gost/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' | head -1) && \
+    curl -L -o gost "$LATEST_GOST" && \
+    chmod +x gost
+
+# 验证下载（可选，便于调试）
+RUN ls -lh /root
+
+# 暴露 SSH 端口
 EXPOSE 22
 
 # 启动 SSH 服务（前台运行）
