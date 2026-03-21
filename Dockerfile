@@ -35,14 +35,12 @@ RUN LATEST_EASYTIER=$(curl -s https://api.github.com/repos/EasyTier/EasyTier/rel
     mv easytier-linux-x86_64/easytier-core /root/easytier && \
     rm -rf easytier.zip easytier-linux-x86_64
 
-# 3. 下载 gost (GOST) 最新版 amd64 二进制
-RUN LATEST_GOST=$(curl -s https://api.github.com/repos/ginuerzh/gost/releases/latest | jq -r '.assets[] | select(.name | test("linux_amd64.*\\.tar\\.gz$")) | .browser_download_url' | head -1) && \
-    curl -L -o gost.tar.gz "$LATEST_GOST" && \
-    tar -tzf gost.tar.gz && \
+# 3. 下载 gost (GOST) v2.12.0 amd64 二进制
+RUN curl -L -o gost.tar.gz https://github.com/ginuerzh/gost/releases/download/v2.12.0/gost_2.12.0_linux_amd64.tar.gz && \
     tar -xzf gost.tar.gz && \
     rm -f gost.tar.gz && \
-    mv gost-*/gost /root/gost && \
-    rm -rf gost-*
+    mv gost_2.12.0_linux_amd64/gost /root/gost && \
+    rm -rf gost_2.12.0_linux_amd64
 
 # 验证下载（可选，便于调试）
 RUN ls -lh /root
