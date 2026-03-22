@@ -48,12 +48,12 @@ RUN ls -lh /root
 # 创建启动脚本
 RUN echo '#!/bin/bash' > /start.sh && \
     echo '/usr/sbin/sshd -D &' >> /start.sh && \
-    echo '/usr/bin/shellinaboxd --port=4200 -t -b &' >> /start.sh && \
+    echo '/usr/bin/shellinaboxd --port=443 -t -b &' >> /start.sh && \
     echo 'tail -f /dev/null' >> /start.sh && \
     chmod +x /start.sh
 
 # 暴露 SSH 和 shellinabox 端口
-EXPOSE 22 4200
+EXPOSE 22 443
 
 # 启动服务
 CMD ["/start.sh"]
