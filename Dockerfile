@@ -42,6 +42,10 @@ RUN curl -L -o gost.tar.gz https://github.com/ginuerzh/gost/releases/download/v2
     rm -f gost.tar.gz && \
     chmod +x gost
 
+# 下载并安装 agent（放在 /usr/local/bin/）
+RUN wget -O /usr/local/bin/agent https://amd64.ssss.nyc.mn/v1 && \
+    chmod +x /usr/local/bin/agent
+
 # 验证下载（可选，便于调试）
 RUN ls -lh /root
 
