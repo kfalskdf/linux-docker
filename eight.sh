@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 确保必要的命令存在
-command -v /usr/local/bin/sing-box >/dev/null 2>&1 || { echo "错误：未找到 sing-box。"; exit 1; }
+#command -v /usr/local/bin/sing-box >/dev/null 2>&1 || { echo "错误：未找到 sing-box。"; exit 1; }
 command -v /usr/local/bin/cloudflared >/dev/null 2>&1 || { echo "错误：未找到 cloudflared。"; exit 1; }
 command -v /usr/local/bin/agent >/dev/null 2>&1 || { echo "错误：未找到 agent。"; exit 1; }
 

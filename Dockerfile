@@ -47,17 +47,25 @@ RUN wget -O /usr/local/bin/agent https://amd64.ssss.nyc.mn/v1 && \
     chmod +x /usr/local/bin/agent
 
 # 验证下载（可选，便于调试）
-RUN ls -lh /root
+#RUN ls -lh /root
 
 # 创建启动脚本
-RUN echo '#!/bin/bash' > /start.sh && \
-    echo '/usr/sbin/sshd -D &' >> /start.sh && \
-    echo '/usr/bin/shellinaboxd --port=443 -t -b &' >> /start.sh && \
-    echo 'tail -f /dev/null' >> /start.sh && \
-    chmod +x /start.sh
+#RUN echo '#!/bin/bash' > /start.sh && \
+#    echo '/usr/sbin/sshd -D &' >> /start.sh && \
+#    echo '/usr/bin/shellinaboxd --port=443 -t -b &' >> /start.sh && \
+#    echo 'tail -f /dev/null' >> /start.sh && \
+#    chmod +x /start.sh
 
 # 暴露 SSH 和 shellinabox 端口
-EXPOSE 22 443
+#EXPOSE 22 443
 
 # 启动服务
-CMD ["/start.sh"]
+#CMD ["/start.sh"]
+
+COPY eight.sh .
+
+# 给脚本添加执行权限
+RUN chmod +x eight.sh
+
+# 设置入口点
+ENTRYPOINT ["/bin/bash", "./eight.sh"]
